@@ -1,0 +1,7 @@
+nodename: example_node_5476
+roleid: ""
+services:
+    - dbus.service
+version: v0.0.0
+webhookenabled: false
+webhookurl: ""
