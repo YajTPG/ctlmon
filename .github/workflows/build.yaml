@@ -1,32 +1,33 @@
 name: Build
 
 on:
-  push:
-    branches:
-      - "master"
+    push:
+        branches:
+            - 'master'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: 1.21
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Set up Go
+              uses: actions/setup-go@v3
+              with:
+                  go-version: 1.21
 
-      - name: Build for all platforms
-        run: |
-          curl -L -o ./bagop "https://github.com/pojntfx/bagop/releases/latest/download/bagop.linux-$(uname -m)"
-          chmod +x ./bagop
-          CGO_ENABLED=0 ./bagop -j 4 -b ctlmon --exclude "(wasip1/*|android/*|ios/*|js/*|windows/*|plan9/*|openbsd/*|aix/*|darwin/*|dragonfly/*|freebsd/*|illumos/*|netbsd/*|solaris/*)" --extra-args "-ldflags=-X 'main.Version=$(cat VERSION)'" .
-          echo VER=$(cat ./VERSION) >> $GITHUB_ENV
-          chmod +x out/*
-      - name: Create Release and Upload binaries
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: false
-          tag_name: ${{ env.VER }}
-          files: |
-            out/*
-            VERSION
+            - name: Build for all platforms
+              run: |
+                  curl -L -o ./bagop "https://github.com/pojntfx/bagop/releases/latest/download/bagop.linux-$(uname -m)"
+                  chmod +x ./bagop
+                  CGO_ENABLED=0 ./bagop -j 4 -b ctlmon --exclude "(wasip1/*|android/*|ios/*|js/*|windows/*|plan9/*|openbsd/*|aix/*|darwin/*|dragonfly/*|freebsd/*|illumos/*|netbsd/*|solaris/*)" --extra-args "-ldflags=-X 'main.Version=$(cat VERSION)'" .
+                  echo VER=$(cat ./VERSION) >> $GITHUB_ENV
+                  chmod +x out/*
+            - name: Create Release and Upload binaries
+              uses: softprops/action-gh-release@v1
+              with:
+                  draft: false
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  tag_name: ${{ env.VER }}
+                  files: |
+                      out/*
+                      VERSION
